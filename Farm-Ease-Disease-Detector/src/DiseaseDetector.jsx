@@ -1,14 +1,31 @@
 import React, { useState, useEffect } from 'react'
 import { Upload } from "lucide-react"
+import axios from 'axios';
 
 // Mock function to simulate disease detection
-const detectDisease = async (image) => {
-  await new Promise(resolve => setTimeout(resolve, 2000)) // Simulate API call
-  return {
-    name: "Tomato Blight",
-    info: "Tomato blight is a devastating disease that can quickly destroy your tomato plants. It's caused by a fungus-like organism that spreads rapidly in wet weather, causing leaves to develop dark spots and eventually die.",
-    instructions: "1. Remove and destroy all infected plant parts immediately\n2. Improve air circulation around plants\n3. Water at the base of the plant to keep leaves dry\n4. Apply copper-based fungicide as a preventive measure\n5. Plant resistant varieties in future seasons\n6. Practice crop rotation to prevent disease buildup in soil"
-  }
+
+
+const API_URL = "http://127.0.0.1:5000/predict";  // Replace with Render URL
+
+async function predictDisease(imageFile) {
+    const formData = new FormData();
+    formData.append("file", imageFile);
+
+    try {
+        const response = await axios.post(API_URL, formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
+        console.log("Prediction:", response.data);
+    } catch (error) {
+        console.error("Error during prediction:", error);
+    }
+    return {
+      name: "Tomato Blight",
+      info: "Tomato blight is a devastating disease that can quickly destroy your tomato plants. It's caused by a fungus-like organism that spreads rapidly in wet weather, causing leaves to develop dark spots and eventually die.",
+      instructions: "1. Remove and destroy all infected plant parts immediately\n2. Improve air circulation around plants\n3. Water at the base of the plant to keep leaves dry\n4. Apply copper-based fungicide as a preventive measure\n5. Plant resistant varieties in future seasons\n6. Practice crop rotation to prevent disease buildup in soil"
+    }
 }
 
 function DiseaseDetector() {
@@ -36,7 +53,7 @@ function DiseaseDetector() {
       setIsLoading(true)
       setDiseaseData(null)
       try {
-        const result = await detectDisease(file)
+        const result = await predictDisease(file)
         setDiseaseData(result)
       } catch (error) {
         console.error("Error detecting disease:", error)
